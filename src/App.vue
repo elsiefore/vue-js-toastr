@@ -10,35 +10,32 @@
 </template>
 
 <script>
-
 export default {
-  name: 'app',
-  components: {
-    
-  },
-  methods:{
-    showToastr(){
-      this.$toastr.show("this is some content")
+  name: "app",
+  components: {},
+  methods: {
+    showToastr() {
+      this.$toastr.show("this is some content");
     },
     showSuccessToastr() {
-      this.$toastr.success("this is some content")
+      this.$toastr.success({ position: "bottom-left", content: "bottom-left" });
     },
     showWarningToastr() {
-      this.$toastr.warning("this is some content")
+      this.$toastr.warning({ position: "bottom-right", content: "bottom-right" });
     },
     showErrorToastr() {
-      this.$toastr.error("this is some content")
+      this.$toastr.error("this is some content");
     },
     showInfoToastr() {
-      this.$toastr.info("this is some content")
+      this.$toastr.info("this is some content");
     }
   }
-}
+};
 </script>
 
 <style>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

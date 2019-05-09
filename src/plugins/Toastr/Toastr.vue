@@ -1,44 +1,50 @@
 <template>
-    <div class="toastr" :class="[{show : isShown}, className]">
-        {{ content }}
-    </div>
+  <div
+    class="toastr"
+    :class="[{show : isShown}, {hide: !isShown}, className, position]"
+  >{{ content }}</div>
 </template>
 
 <script>
-import Toastr from './index'
-import { setTimeout } from 'timers';
+import Toastr from "./index";
+import { setTimeout } from "timers";
 export default {
-    name: "Toastr",
-    data() {
-        return {
-            isShown: false,
-            className: '',
-            content: '',
-            duration: 3000
-        }
-    },
-    beforeMount() {
-        Toastr.event.$on('show', this.showToastr)
-    },
-    beforeDestroy() {
-        Toastr.event.$off('show', this.showToastr)
-    },
-    methods: {
-        showToastr(className, params) {
-            this.className = className;
-            if ( typeof params === 'string') {
-                this.content = params
-            } else if ( typeof params === 'object') {
-                this.content = param.content || "";
-                this.duration = param.duration || 3000;
-            }
-            
-            let self = this;
-            this.isShown = true;
-            setTimeout(() => {self.isShown = false}, this.duration)
-        }
+  name: "Toastr",
+  data() {
+    return {
+      isShown: false,
+      className: "",
+      content: "",
+      duration: 3000,
+      position: "bottom-center"
+    };
+  },
+  beforeMount() {
+    Toastr.event.$on("show", this.showToastr);
+  },
+  beforeDestroy() {
+    Toastr.event.$off("show", this.showToastr);
+  },
+  methods: {
+    showToastr(className, params) {
+      this.className = className;
+      if (typeof params === "string") {
+        this.content = params;
+        this.position = "bottom-center"; // reset to default
+      } else if (typeof params === "object") {
+        this.content = params.content || "";
+        this.duration = params.duration || 3000;
+        this.position = params.position || "bottom-center";
+      }
+
+      let self = this;
+      this.isShown = true;
+      setTimeout(() => {
+        self.isShown = false;
+      }, this.duration);
     }
-}
+  }
+};
 </script>
 
 <style scoped>
@@ -53,52 +59,94 @@ export default {
   padding: 16px; /* Padding */
   position: fixed; /* Sit on top of the screen */
   z-index: 1; /* Add a z-index if needed */
+}
+
+.toastr.bottom-center {
   left: 50%; /* Center the snackbar */
   bottom: 30px; /* 30px from the bottom */
 }
 
+.toastr.bottom-right {
+  left: 90%; /* Center the snackbar */
+  bottom: 30px; /* 30px from the bottom */
+}
+
+.toastr.bottom-left {
+  left: 10%;
+  bottom: 30px;
+}
+
 .toastr.show {
   visibility: visible;
-  /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
-  However, delay the fade out process for 2.5 seconds */
-  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
-  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  opacity: 1;
+  -webkit-animation: fadein 0.5s;
+  animation: fadein 0.5s;
+}
+
+.toastr.hide {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0.5s linear, opacity 0.5s linear;
 }
 
 .toastr.success {
-    background-color: #5cb85c;
+  background-color: #5cb85c;
 }
 
 .toastr.info {
-    background-color: #5bc0de;
+  background-color: #5bc0de;
 }
 
 .toastr.warning {
-    background-color: #f0ad4e;
+  background-color: #f0ad4e;
 }
 
 .toastr.error {
-    background-color: #d9534f;
+  background-color: #d9534f;
 }
 
 /* Animations to fade the snackbar in and out */
 @-webkit-keyframes fadein {
-  from {bottom: 0; opacity: 0;}
-  to {bottom: 30px; opacity: 1;}
+  from {
+    bottom: 0;
+    opacity: 0;
+  }
+  to {
+    bottom: 30px;
+    opacity: 1;
+  }
 }
 
 @keyframes fadein {
-  from {bottom: 0; opacity: 0;}
-  to {bottom: 30px; opacity: 1;}
+  from {
+    bottom: 0;
+    opacity: 0;
+  }
+  to {
+    bottom: 30px;
+    opacity: 1;
+  }
 }
 
 @-webkit-keyframes fadeout {
-  from {bottom: 30px; opacity: 1;}
-  to {bottom: 0; opacity: 0;}
+  from {
+    bottom: 30px;
+    opacity: 1;
+  }
+  to {
+    bottom: 0;
+    opacity: 0;
+  }
 }
 
 @keyframes fadeout {
-  from {bottom: 30px; opacity: 1;}
-  to {bottom: 0; opacity: 0;}
+  from {
+    bottom: 30px;
+    opacity: 1;
+  }
+  to {
+    bottom: 0;
+    opacity: 0;
+  }
 }
 </style>
