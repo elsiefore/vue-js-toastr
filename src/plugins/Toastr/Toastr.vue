@@ -1,8 +1,13 @@
 <template>
-  <div>
-    <div class="toastr" :class="[{show : isShown}, {hide: !isShown}, className, position]">
-      <div class="title" v-if="title !== ''">{{ title }}</div>
-      <div>{{ content }}</div>
+  <div class="toastr-container" :class="[position]">
+    <div
+      v-for="element in toastrs"
+      :key="element.id"
+      class="toastr"
+      :class="[{show : element.isShown}, {hide: !element.isShown}, element.className]"
+    >
+      <div class="title" v-if="element.title !== ''">{{ element.title }}</div>
+      <div>{{ element.content }}</div>
     </div>
   </div>
 </template>
@@ -14,13 +19,19 @@ export default {
   name: "Toastr",
   data() {
     return {
-      isShown: false,
-      className: "",
-      content: "",
-      duration: 3000,
-      position: "bottom-center",
-      title: "This is title"
+      toastrs: [],
+      position: "bottom-left"
     };
+  },
+  computed: {
+    shownCount: function() {
+      return this.toastrs.filter(toastr => toastr.isShown === true).length;
+    }
+  },
+  watch: {
+    shownCount(val) {
+      if (val === 0) this.toastrs = [];
+    }
   },
   beforeMount() {
     Toastr.event.$on("show", this.showToastr);
@@ -29,42 +40,67 @@ export default {
     Toastr.event.$off("show", this.showToastr);
   },
   methods: {
-    showToastr(className, params) {
-      this.className = className;
-      if (typeof params === "string") {
-        this.content = params;
-        /* Reset to default */
-        this.position = "bottom-center";
-        this.title = "";
-      } else if (typeof params === "object") {
-        this.content = params.content || "";
-        this.title = params.title || "";
-        this.duration = params.duration || 3000;
-        this.position = params.position || "bottom-center";
-      }
+    showToastr(className, position, newest_on_top, params) {
+      this.position = position;
+      let newToastr = {
+        className: className,
+        isShown: true
+      };
 
+      if (typeof params === "string") {
+        newToastr.content = params;
+        /* Reset to default */
+        newToastr.title = "";
+        newToastr.duration = 3000;
+      } else if (typeof params === "object") {
+        /* Get user options */
+        newToastr.content = params.content || "";
+        newToastr.title = params.title || "";
+        newToastr.duration = params.duration || 3000;
+      }
+      newToastr.content = this.shownCount;
+      let index = this.toastrs.push(newToastr) - 1;
       let self = this;
-      this.isShown = true;
       setTimeout(() => {
-        self.isShown = false;
-      }, this.duration);
+        self.toastrs[index].isShown = false;
+      }, this.toastrs[index].duration);
     }
   }
 };
 </script>
 
 <style scoped>
+.toastr-container {
+  position: fixed;
+}
+
+.toastr-container.bottom-left {
+  bottom: 6px;
+  left: 12px;
+}
+
+.toastr-container.bottom-center {
+  bottom: 6px;
+  left: 50%;
+  margin-left: -125px;
+}
+
+.toastr-container.bottom-right {
+  bottom: 6px;
+  right: 12px;
+}
+
 .toastr {
   visibility: hidden; /* Hidden by default. Visible on click */
   min-width: 250px; /* Set a default minimum width */
-  margin-left: -125px; /* Divide value of min-width by 2 */
   background-color: #292b2c; /* Black background color */
   color: #fff; /* White text color */
   text-align: left; /* Left-align text */
   border-radius: 2px; /* Rounded borders */
   padding: 12px; /* Padding */
-  position: fixed; /* Sit on top of the screen */
+  position: relative; /* Sit on top of the screen */
   z-index: 1; /* Add a z-index if needed */
+  margin: 6px;
 }
 
 .title {
@@ -118,22 +154,18 @@ export default {
 /* Animations to fade the snackbar in and out */
 @-webkit-keyframes fadein {
   from {
-    bottom: 0;
     opacity: 0;
   }
   to {
-    bottom: 30px;
     opacity: 1;
   }
 }
 
 @keyframes fadein {
   from {
-    bottom: 0;
     opacity: 0;
   }
   to {
-    bottom: 30px;
     opacity: 1;
   }
 }

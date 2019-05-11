@@ -18,10 +18,10 @@ export default {
       this.$toastr.show("this is some content");
     },
     showSuccessToastr() {
-      this.$toastr.success({ position: "bottom-left", content: "bottom-left" });
+      this.$toastr.success({ content: "bottom-left" });
     },
     showWarningToastr() {
-      this.$toastr.warning({ position: "bottom-right", content: "bottom-right", title:"This is title." });
+      this.$toastr.warning({ content: "bottom-right", title:"This is title." });
     },
     showErrorToastr() {
       this.$toastr.error("this is some content");
