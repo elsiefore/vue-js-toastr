@@ -1,13 +1,37 @@
 <template>
-  <div class="toastr-container" :class="[position]">
-    <div
-      v-for="element in toastrs"
-      :key="element.id"
-      class="toastr"
-      :class="[{show : element.isShown}, {hide: !element.isShown}, element.className]"
-    >
-      <div class="title" v-if="element.title !== ''">{{ element.title }}</div>
-      <div>{{ element.content }}</div>
+  <div>
+    <div class="toastr-container bottom-left">
+      <div
+        v-for="element in bottom_left_toastrs"
+        :key="element.id"
+        class="toastr"
+        :class="[{show : element.isShown}, {hide: !element.isShown}, element.className]"
+      >
+        <div class="title" v-if="element.title !== ''">{{ element.title }}</div>
+        <div>{{ element.content }}</div>
+      </div>
+    </div>
+    <div class="toastr-container bottom-center">
+      <div
+        v-for="element in bottom_center_toastrs"
+        :key="element.id"
+        class="toastr"
+        :class="[{show : element.isShown}, {hide: !element.isShown}, element.className]"
+      >
+        <div class="title" v-if="element.title !== ''">{{ element.title }}</div>
+        <div>{{ element.content }}</div>
+      </div>
+    </div>
+    <div class="toastr-container bottom-right">
+      <div
+        v-for="element in bottom_right_toastrs"
+        :key="element.id"
+        class="toastr"
+        :class="[{show : element.isShown}, {hide: !element.isShown}, element.className]"
+      >
+        <div class="title" v-if="element.title !== ''">{{ element.title }}</div>
+        <div>{{ element.content }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -19,18 +43,26 @@ export default {
   name: "Toastr",
   data() {
     return {
-      toastrs: [],
-      position: "bottom-left"
+      bottom_left_toastrs: [],
+      bottom_right_toastrs: [],
+      bottom_center_toastrs: []
     };
   },
   computed: {
     shownCount: function() {
-      return this.toastrs.filter(toastr => toastr.isShown === true).length;
+      return this.bottom_left_toastrs
+        .concat(this.bottom_right_toastrs)
+        .concat(this.bottom_center_toastrs)
+        .filter(toastr => toastr.isShown === true).length;
     }
   },
   watch: {
     shownCount(val) {
-      if (val === 0) this.toastrs = [];
+      if (val === 0) {
+        this.bottom_center_toastrs = [];
+        this.bottom_left_toastrs = [];
+        this.bottom_right_toastrs = [];
+      }
     }
   },
   beforeMount() {
@@ -40,8 +72,9 @@ export default {
     Toastr.event.$off("show", this.showToastr);
   },
   methods: {
-    showToastr(className, position, newest_on_top, params) {
-      this.position = position;
+    showToastr(className, newest_on_top, params) {
+      /* Default position */
+      let position = "bottom-left";
       let newToastr = {
         className: className,
         isShown: true
@@ -57,13 +90,32 @@ export default {
         newToastr.content = params.content || "";
         newToastr.title = params.title || "";
         newToastr.duration = params.duration || 3000;
+        position = params.position || "bottom-left";
       }
-      newToastr.content = this.shownCount;
-      let index = this.toastrs.push(newToastr) - 1;
       let self = this;
-      setTimeout(() => {
-        self.toastrs[index].isShown = false;
-      }, this.toastrs[index].duration);
+      let index = 0;
+      /* Position to respective container */
+      switch (position) {
+        case "bottom-right":
+          index = this.bottom_right_toastrs.push(newToastr) - 1;
+          setTimeout(() => {
+            self.bottom_right_toastrs[index].isShown = false;
+          }, this.bottom_right_toastrs[index].duration);
+          break;
+        case "bottom-center":
+          index = this.bottom_center_toastrs.push(newToastr) - 1;
+          setTimeout(() => {
+            self.bottom_center_toastrs[index].isShown = false;
+          }, this.bottom_center_toastrs[index].duration);
+          break;
+        case "bottom-left":
+        default:
+          index = this.bottom_left_toastrs.push(newToastr) - 1;
+          setTimeout(() => {
+            self.bottom_left_toastrs[index].isShown = false;
+          }, this.bottom_left_toastrs[index].duration);
+          break;
+      }
     }
   }
 };
@@ -105,21 +157,6 @@ export default {
 
 .title {
   font-weight: bold;
-}
-
-.toastr.bottom-center {
-  left: 50%; /* Center the snackbar */
-  bottom: 30px; /* 30px from the bottom */
-}
-
-.toastr.bottom-right {
-  left: 90%; /* Center the snackbar */
-  bottom: 30px; /* 30px from the bottom */
-}
-
-.toastr.bottom-left {
-  left: 10%;
-  bottom: 30px;
 }
 
 .toastr.show {
