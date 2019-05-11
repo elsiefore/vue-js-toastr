@@ -21,7 +21,7 @@ export default {
       this.$toastr.success({ position: "bottom-left", content: "bottom-left" });
     },
     showWarningToastr() {
-      this.$toastr.warning({ position: "bottom-right", content: "bottom-right" });
+      this.$toastr.warning({ position: "bottom-right", content: "bottom-right", title:"This is title." });
     },
     showErrorToastr() {
       this.$toastr.error("this is some content");

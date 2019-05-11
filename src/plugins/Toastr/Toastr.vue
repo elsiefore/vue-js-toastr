@@ -1,8 +1,10 @@
 <template>
-  <div
-    class="toastr"
-    :class="[{show : isShown}, {hide: !isShown}, className, position]"
-  >{{ content }}</div>
+  <div>
+    <div class="toastr" :class="[{show : isShown}, {hide: !isShown}, className, position]">
+      <div class="title" v-if="title !== ''">{{ title }}</div>
+      <div>{{ content }}</div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -16,7 +18,8 @@ export default {
       className: "",
       content: "",
       duration: 3000,
-      position: "bottom-center"
+      position: "bottom-center",
+      title: "This is title"
     };
   },
   beforeMount() {
@@ -30,9 +33,12 @@ export default {
       this.className = className;
       if (typeof params === "string") {
         this.content = params;
-        this.position = "bottom-center"; // reset to default
+        /* Reset to default */
+        this.position = "bottom-center";
+        this.title = "";
       } else if (typeof params === "object") {
         this.content = params.content || "";
+        this.title = params.title || "";
         this.duration = params.duration || 3000;
         this.position = params.position || "bottom-center";
       }
@@ -54,11 +60,15 @@ export default {
   margin-left: -125px; /* Divide value of min-width by 2 */
   background-color: #292b2c; /* Black background color */
   color: #fff; /* White text color */
-  text-align: center; /* Centered text */
+  text-align: left; /* Left-align text */
   border-radius: 2px; /* Rounded borders */
-  padding: 16px; /* Padding */
+  padding: 12px; /* Padding */
   position: fixed; /* Sit on top of the screen */
   z-index: 1; /* Add a z-index if needed */
+}
+
+.title {
+  font-weight: bold;
 }
 
 .toastr.bottom-center {
@@ -98,7 +108,7 @@ export default {
 }
 
 .toastr.warning {
-  background-color: #f0ad4e;
+  background-color: #ffc20e;
 }
 
 .toastr.error {
@@ -125,28 +135,6 @@ export default {
   to {
     bottom: 30px;
     opacity: 1;
-  }
-}
-
-@-webkit-keyframes fadeout {
-  from {
-    bottom: 30px;
-    opacity: 1;
-  }
-  to {
-    bottom: 0;
-    opacity: 0;
-  }
-}
-
-@keyframes fadeout {
-  from {
-    bottom: 30px;
-    opacity: 1;
-  }
-  to {
-    bottom: 0;
-    opacity: 0;
   }
 }
 </style>
